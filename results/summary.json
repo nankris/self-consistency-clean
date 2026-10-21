@@ -1,0 +1,101 @@
+{
+  "n_questions": 500,
+  "model": "Qwen/Qwen3-1.7B",
+  "verdict": "INCONCLUSIVE",
+  "verdict_detail": "Inconclusive: point estimate +4.60 pp overlaps margin or bounds.",
+  "greedy": {
+    "correct": 372,
+    "accuracy": 0.744,
+    "ci95": [
+      0.706,
+      0.782
+    ],
+    "parse_fails": 3,
+    "parse_fail_rate": 0.006,
+    "mean_tokens": 157.616
+  },
+  "stochastic_overall": {
+    "total_samples": 4000,
+    "parse_fails": 18,
+    "parse_fail_rate": 0.0045,
+    "mean_tokens": 157.76225
+  },
+  "curves": {
+    "1": {
+      "accuracy": 0.758,
+      "ci95": [
+        0.72,
+        0.796
+      ],
+      "delta": 0.014,
+      "delta_ci95": [
+        -0.012,
+        0.038
+      ],
+      "delta_ci90": [
+        -0.008,
+        0.03409999999999855
+      ],
+      "vote_only": 25,
+      "greedy_only": 18,
+      "mcnemar_p": 0.3603776529357674
+    },
+    "3": {
+      "accuracy": 0.766,
+      "ci95": [
+        0.728,
+        0.802
+      ],
+      "delta": 0.022,
+      "delta_ci95": [
+        -0.002,
+        0.048
+      ],
+      "delta_ci90": [
+        0.0,
+        0.042
+      ],
+      "vote_only": 26,
+      "greedy_only": 15,
+      "mcnemar_p": 0.11727520595741225
+    },
+    "5": {
+      "accuracy": 0.78,
+      "ci95": [
+        0.744,
+        0.816
+      ],
+      "delta": 0.036,
+      "delta_ci95": [
+        0.01,
+        0.062
+      ],
+      "delta_ci90": [
+        0.014,
+        0.056
+      ],
+      "vote_only": 31,
+      "greedy_only": 13,
+      "mcnemar_p": 0.009559878856634896
+    },
+    "8": {
+      "accuracy": 0.79,
+      "ci95": [
+        0.754,
+        0.824
+      ],
+      "delta": 0.046,
+      "delta_ci95": [
+        0.02,
+        0.072
+      ],
+      "delta_ci90": [
+        0.024,
+        0.068
+      ],
+      "vote_only": 34,
+      "greedy_only": 11,
+      "mcnemar_p": 0.0008240823595997425
+    }
+  }
+}

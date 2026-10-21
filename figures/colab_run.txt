@@ -1,0 +1,40 @@
+=== COLAB SESSION INFO ===
+Mon Oct 19 21:33:33 UTC 2026
+[b10-035b] gpu-l4-s-kkb-ass1a1-3dwmhjxm9etab | Hardware: L4 | Shape: Standard | Variant: GPU
+[b10-102d] gpu-l4-s-kkb-ass1b0-3caxo31arlxrv | Hardware: L4 | Shape: Standard | Variant: GPU
+Current balance: 106.52 compute units
+Usage rate: 3.08/hr
+Active assignments: 2
+=== NVIDIA-SMI ON REMOTE L4 ===
+Mon Oct 19 21:33:39 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.82.07              Driver Version: 580.82.07      CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA L4                      Off |   00000000:00:03.0 Off |                    0 |
+| N/A   39C    P8             12W /   72W |       0MiB /  23034MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+
+=== PRE-STOP USAGE ===
+Mon Oct 19 21:48:44 UTC 2026
+Current balance: 105.75 compute units
+Usage rate: 3.08/hr
+Active assignments: 2
+[colab] Stopping session 'b10-035b'...
+[colab] Session terminated.
+=== POST-STOP USAGE ===
+Current balance: 105.75 compute units
+Usage rate: 1.54/hr
+Active assignments: 1

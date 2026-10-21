@@ -1,0 +1,22 @@
+{
+  "start_ist": "2026-10-20 00:25:13 IST",
+  "end_ist": "2026-10-20 03:25:00 IST",
+  "estimated_minutes": {
+    "setup": 10,
+    "pilot": 5,
+    "gpu_run": 25,
+    "eval": 5,
+    "writeup": 15,
+    "total": 60
+  },
+  "actual_minutes": {
+    "setup": 20,
+    "pilot": 3,
+    "gpu_run": 14,
+    "eval": 4,
+    "writeup": 15,
+    "total": 56
+  },
+  "gpu": "NVIDIA L4",
+  "compute_units": 0.96
+}

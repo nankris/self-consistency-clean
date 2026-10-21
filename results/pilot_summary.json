@@ -1,0 +1,10 @@
+{
+  "n_items": 50,
+  "greedy_parse_fails": 1,
+  "greedy_parse_fail_rate": 0.02,
+  "stochastic_parse_fails": 3,
+  "total_stochastic_samples": 400,
+  "stochastic_parse_fail_rate": 0.0075,
+  "pilot_duration_seconds": 36.72986841201782,
+  "passed": true
+}

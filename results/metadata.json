@@ -1,0 +1,17 @@
+{
+  "model": "Qwen/Qwen3-1.7B",
+  "gpu": "NVIDIA L4",
+  "suffix": "\n\nSolve briefly step by step. Conclude your answer on a new line with: The answer is [number].",
+  "k_samples": 8,
+  "temperature": 0.7,
+  "top_p": 0.95,
+  "max_tokens": 512,
+  "versions": {
+    "vllm": "0.32.0",
+    "torch": "2.13.0",
+    "transformers": "5.19.0",
+    "datasets": "4.8.5"
+  },
+  "start_time": 1792446177.3668258,
+  "model_commit": null
+}
