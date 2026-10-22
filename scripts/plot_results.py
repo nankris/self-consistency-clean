@@ -1,9 +1,9 @@
-"""Generate publication-ready figures for Experiment 035b.
+"""Generate publication-ready figures for this experiment.
 
 Creates:
 1. figures/accuracy_vs_k.png (Accuracy curve across k=1, 3, 5, 8 vs greedy with 95% CIs)
 2. figures/delta_bootstrap.png (Paired difference bootstrap distribution with margin thresholds)
-3. figures/parse_failure_rate.png (Parse failure rate comparison: 035r5 vs 035b)
+3. figures/parse_failure_rate.png (Parse failure rate comparison: earlier prompt vs clean prompt)
 4. figures/table.png (Main results table rendered as an image for Substack)
 """
 from __future__ import annotations
@@ -130,7 +130,7 @@ def plot_all():
     # ==============================================================
     fig, ax = plt.subplots(figsize=(7, 4.2), dpi=150)
     
-    categories = ["035r5 (Flawed Prompt)\n'Answer: NUMBER'", "035b (Clean Prompt)\n'The answer is [number]'"]
+    categories = ["Earlier run (Flawed Prompt)\n'Answer: NUMBER'", "This run (Clean Prompt)\n'The answer is [number]'"]
     greedy_fails = [55.75, greedy["parse_fail_rate"] * 100]
     stoch_fails = [55.80, summary["stochastic_overall"]["parse_fail_rate"] * 100]
 
@@ -150,7 +150,7 @@ def plot_all():
                     xytext=(0, 4), textcoords="offset points", ha="center", va="bottom", fontsize=9, fontweight="bold")
 
     ax.axhline(2.0, color="#d9480f", linestyle="--", linewidth=1.2, label="Pre-Registered Pilot Gate (< 2.0%)")
-    ax.set_title("Parse Failure Rate: 035r5 Artifact vs 035b Clean Extractor", fontsize=11, fontweight="bold", pad=12)
+    ax.set_title("Parse Failure Rate: Earlier Prompt Artifact vs Clean Extractor", fontsize=11, fontweight="bold", pad=12)
     ax.set_ylabel("Parse Failure Rate (%)", fontsize=10, labelpad=8)
     ax.set_xticks(x)
     ax.set_xticklabels(categories, fontsize=9.5)
@@ -206,7 +206,7 @@ def plot_all():
             if i == len(table_data) - 1:
                 cell.set_text_props(weight="bold")
 
-    ax.set_title(f"Experiment 035b Confirmatory Evaluation: Qwen3-1.7B on GSM8K (n={n_q})\nVerdict: {verdict}",
+    ax.set_title(f"Confirmatory Evaluation: Qwen3-1.7B on GSM8K (n={n_q})\nVerdict: {verdict}",
                  fontsize=11, fontweight="bold", pad=15)
     
     plt.tight_layout()

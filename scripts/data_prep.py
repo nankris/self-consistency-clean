@@ -1,9 +1,11 @@
 """Prepare fresh GSM8K splits for pilot and confirmatory runs.
 
-Guarantees 100% zero overlap with prior experiments:
-035, 035r, 035r3, 035r5.
+Guarantees zero overlap with the questions used in the earlier runs of this
+study (the self-consistency-voting repo). Point PRIOR_RUNS_DIR at a directory
+holding one sub-folder per earlier run, each with results/questions.json.
 """
 import json
+import os
 from pathlib import Path
 from datasets import load_dataset
 
@@ -15,18 +17,14 @@ def main():
     ds_test = load_dataset("openai/gsm8k", "main", split="test")
     ds_train = load_dataset("openai/gsm8k", "main", split="train")
 
-    prior_dirs = [
-        "035-self-consistency",
-        "035r-self-consistency-4b",
-        "035r3-self-consistency",
-        "035r5-self-consistency-1p7b",
-    ]
     used_questions = set()
     used_indices = set()
 
-    tig_dir = Path("/workspace/work/tig")
-    for p_dir in prior_dirs:
-        q_file = tig_dir / p_dir / "results" / "questions.json"
+    prior_dir = Path(os.environ.get("PRIOR_RUNS_DIR", "prior_runs"))
+    prior_files = sorted(prior_dir.glob("*/results/questions.json"))
+    if len(prior_files) != 4:
+        raise SystemExit(f"Expected the 4 earlier runs' results/questions.json under {prior_dir}, found {len(prior_files)}; set PRIOR_RUNS_DIR to a self-consistency-voting checkout.")
+    for q_file in prior_files:
         if q_file.exists():
             data = json.loads(q_file.read_text())
             for item in data:

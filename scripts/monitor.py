@@ -1,4 +1,4 @@
-"""Local monitor script for Experiment 035b.
+"""Local monitor script for the clean self-consistency run.
 
 Polls Colab runner via fast colab download of logs and progress artifacts,
 streams status, and mirrors results back to local results/ incrementally.
@@ -14,7 +14,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 RESULTS_DIR = BASE_DIR / "results"
-SESSION = "b10-035b"
+SESSION = "sc-clean"
 
 os.environ["NO_PROXY"] = "colab.research.google.com,colab.dev,.colab.dev,googleapis.com,google.com"
 os.environ["no_proxy"] = "colab.research.google.com,colab.dev,.colab.dev,googleapis.com,google.com"
@@ -34,7 +34,7 @@ def main():
         try:
             # 1. Download runner.log
             log_file = RESULTS_DIR / "runner.log"
-            if download("/content/b10-035b/runner.log", log_file):
+            if download("/content/sc-clean/runner.log", log_file):
                 current_size = log_file.stat().st_size
                 if current_size > last_log_size:
                     lines = log_file.read_text(errors="replace").splitlines()
@@ -45,7 +45,7 @@ def main():
             # 2. Check pilot summary
             if not pilot_announced:
                 p_file = RESULTS_DIR / "pilot_summary.json"
-                if download("/content/b10-035b/pilot_summary.json", p_file):
+                if download("/content/sc-clean/pilot_summary.json", p_file):
                     try:
                         p_data = json.loads(p_file.read_text())
                         print(f"\n==========================================", flush=True)
@@ -64,7 +64,7 @@ def main():
                 b_name = f"b{b_idx:04d}.jsonl"
                 b_path = RESULTS_DIR / b_name
                 if b_name not in downloaded_batches:
-                    if download(f"/content/b10-035b/{b_name}", b_path):
+                    if download(f"/content/sc-clean/{b_name}", b_path):
                         lines = [l for l in b_path.read_text().splitlines() if l.strip()]
                         if len(lines) >= 50:
                             downloaded_batches.add(b_name)
@@ -74,13 +74,13 @@ def main():
 
             # 4. Check completion
             comp_file = RESULTS_DIR / "complete.txt"
-            if download("/content/b10-035b/complete.txt", comp_file):
+            if download("/content/sc-clean/complete.txt", comp_file):
                 print(f"\n[{time.strftime('%X')}] REMOTE RUN IS FULLY COMPLETE!", flush=True)
                 break
 
             # 5. Check error
             err_file = RESULTS_DIR / "error.txt"
-            if download("/content/b10-035b/error.txt", err_file):
+            if download("/content/sc-clean/error.txt", err_file):
                 print(f"\n[{time.strftime('%X')}] ERROR on remote VM:", flush=True)
                 print(err_file.read_text(), flush=True)
                 break
@@ -93,11 +93,11 @@ def main():
     # Mirror remaining artifacts
     print(f"\n[{time.strftime('%X')}] Downloading final metadata and all batches...", flush=True)
     for extra in ["metadata.json", "pilot_results.json", "progress.json"]:
-        download(f"/content/b10-035b/{extra}", RESULTS_DIR / extra)
+        download(f"/content/sc-clean/{extra}", RESULTS_DIR / extra)
         
     for b_idx in range(0, 500, 50):
         b_name = f"b{b_idx:04d}.jsonl"
-        download(f"/content/b10-035b/{b_name}", RESULTS_DIR / b_name)
+        download(f"/content/sc-clean/{b_name}", RESULTS_DIR / b_name)
 
     print(f"[{time.strftime('%X')}] All artifacts mirrored successfully to results/!", flush=True)
 

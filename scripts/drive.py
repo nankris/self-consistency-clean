@@ -1,6 +1,6 @@
-"""Local orchestrator for Experiment 035b.
+"""Local orchestrator for the clean self-consistency run.
 
-Manages remote execution on Colab VM session 'b10-035b'.
+Manages remote execution on Colab VM session 'sc-clean'.
 Ensures reboot-proofing: runs inference as detached background process on Colab,
 periodically polls progress, and mirrors results back to results/ incrementally.
 """
@@ -17,7 +17,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 SCRIPTS_DIR = BASE_DIR / "scripts"
 RESULTS_DIR = BASE_DIR / "results"
-SESSION = "b10-035b"
+SESSION = "sc-clean"
 
 # Ensure NO_PROXY is set so colab CLI can connect to Colab VM endpoints
 os.environ["NO_PROXY"] = "colab.research.google.com,colab.dev,.colab.dev,googleapis.com,google.com"
@@ -50,16 +50,16 @@ def main():
     print(res.stdout.strip(), flush=True)
 
     print("\n=== Step 2: Upload experiment files ===", flush=True)
-    upload_file(SCRIPTS_DIR / "parser.py", "/content/b10-035b/parser.py")
-    upload_file(SCRIPTS_DIR / "colab_runner.py", "/content/b10-035b/colab_runner.py")
-    upload_file(RESULTS_DIR / "pilot_questions.json", "/content/b10-035b/pilot_questions.json")
-    upload_file(RESULTS_DIR / "confirmatory_questions.json", "/content/b10-035b/confirmatory_questions.json")
+    upload_file(SCRIPTS_DIR / "parser.py", "/content/sc-clean/parser.py")
+    upload_file(SCRIPTS_DIR / "colab_runner.py", "/content/sc-clean/colab_runner.py")
+    upload_file(RESULTS_DIR / "pilot_questions.json", "/content/sc-clean/pilot_questions.json")
+    upload_file(RESULTS_DIR / "confirmatory_questions.json", "/content/sc-clean/confirmatory_questions.json")
 
     print("\n=== Step 3: Launch detached runner on Colab VM ===", flush=True)
     launch_code = """
 import subprocess, os, sys
 from pathlib import Path
-R = Path('/content/b10-035b')
+R = Path('/content/sc-clean')
 pid_file = R / 'runner.pid'
 alive = False
 if pid_file.exists():
@@ -98,7 +98,7 @@ else:
         poll_code = """
 import json, os
 from pathlib import Path
-R = Path('/content/b10-035b')
+R = Path('/content/sc-clean')
 pid_file = R / 'runner.pid'
 alive = False
 if pid_file.exists():
@@ -143,7 +143,7 @@ print(json.dumps(status))
 
                 # If pilot just finished and not mirrored yet
                 if status.get("pilot_done") and not (RESULTS_DIR / "pilot_summary.json").exists():
-                    p_code = "import base64; print(base64.b64encode(open('/content/b10-035b/pilot_summary.json', 'rb').read()).decode('ascii'))"
+                    p_code = "import base64; print(base64.b64encode(open('/content/sc-clean/pilot_summary.json', 'rb').read()).decode('ascii'))"
                     p_res = colab_exec(p_code, timeout=30.0)
                     if p_res.returncode == 0:
                         (RESULTS_DIR / "pilot_summary.json").write_bytes(base64.b64decode(p_res.stdout.strip()))
@@ -151,7 +151,7 @@ print(json.dumps(status))
 
                 # Mirror batch files
                 for f_name in status.get("files", []):
-                    dl_code = f"import base64; print(base64.b64encode(open('/content/b10-035b/{f_name}', 'rb').read()).decode('ascii'))"
+                    dl_code = f"import base64; print(base64.b64encode(open('/content/sc-clean/{f_name}', 'rb').read()).decode('ascii'))"
                     dl_res = colab_exec(dl_code, timeout=30.0)
                     if dl_res.returncode == 0 and dl_res.stdout.strip():
                         (RESULTS_DIR / f_name).write_bytes(base64.b64decode(dl_res.stdout.strip()))
@@ -179,7 +179,7 @@ print(json.dumps(status))
         "metadata.json", "pilot_summary.json", "pilot_results.json",
         "progress.json", "runner.log", "complete.txt"
     ]
-    list_code = "import json; from pathlib import Path; print(json.dumps([p.name for p in Path('/content/b10-035b').glob('*.jsonl')]))"
+    list_code = "import json; from pathlib import Path; print(json.dumps([p.name for p in Path('/content/sc-clean').glob('*.jsonl')]))"
     res = colab_exec(list_code, timeout=30.0)
     if res.returncode == 0:
         jsonl_files = json.loads(res.stdout.strip())
@@ -189,7 +189,7 @@ print(json.dumps(status))
         fetch_code = f"""
 import base64, os
 from pathlib import Path
-p = Path('/content/b10-035b/{fname}')
+p = Path('/content/sc-clean/{fname}')
 if p.exists():
     print(base64.b64encode(p.read_bytes()).decode('ascii'))
 else:

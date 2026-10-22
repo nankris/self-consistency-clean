@@ -1,4 +1,4 @@
-# Experiment 035b: Self-Consistency Done Right
+# Self-Consistency Done Right
 
 **Verdict: INCONCLUSIVE (Statistically Significant Gain, Sub-Margin Point Estimate).**
 
@@ -31,26 +31,26 @@ The pre-registered decision rule required three conditions to declare **PROVEN**
 2. The 95% bootstrap CI lower bound strictly $> +2.0\text{ percentage points}$
 3. Confirmatory parse failure rate $< 2.0\%$ across all arms
 
-Conditions (2) and (3) were decisively met: the bootstrap 95% CI lower bound is exactly $+2.00$ pp (strictly excluding zero and confirming a true positive effect), and parse failure rates plummeted from 55.75% in `035r5` to just **0.60%** (greedy) and **0.45%** (stochastic samples). However, condition (1) was narrowly missed: the point estimate is **+4.60 pp**, which is $0.40$ pp shy of the $+5.0$ pp superiority bar. Because the 95% CI spans from $+2.00$ to $+7.20$ pp, the evidence budget neither proves superiority at the $+5.0$ pp margin nor disproves it. Under the pre-registered protocol, the verdict is **INCONCLUSIVE**.
+Conditions (2) and (3) were decisively met: the bootstrap 95% CI lower bound is exactly $+2.00$ pp (strictly excluding zero and confirming a true positive effect), and parse failure rates plummeted from 55.75% in the earlier run to just **0.60%** (greedy) and **0.45%** (stochastic samples). However, condition (1) was narrowly missed: the point estimate is **+4.60 pp**, which is $0.40$ pp shy of the $+5.0$ pp superiority bar. Because the 95% CI spans from $+2.00$ to $+7.20$ pp, the evidence budget neither proves superiority at the $+5.0$ pp margin nor disproves it. Under the pre-registered protocol, the verdict is **INCONCLUSIVE**.
 
 ---
 
-## The Batch 10 Flaw & Resolution
+## The Earlier Flaw & Resolution
 
-In round 5 (`035r5-self-consistency-1p7b`), self-consistency appeared to produce a massive leap of +15.50 points (greedy 28.50% vs vote@5 44.00%). But an audit showed that 55.75% of greedy outputs and 55.80% of stochastic outputs failed to parse because the prompt prompt literally said `Answer: NUMBER`, causing the 1.7B model to copy the literal placeholder token `"NUMBER"` before its numerical value.
+In the last of my [earlier self-consistency runs](https://github.com/nankris/self-consistency-voting) (Qwen3-1.7B, vote@5), self-consistency appeared to produce a massive leap of +15.50 points (greedy 28.50% vs vote@5 44.00%). But an audit showed that 55.75% of greedy outputs and 55.80% of stochastic outputs failed to parse because the prompt literally said `Answer: NUMBER`, causing the 1.7B model to copy the literal placeholder token `"NUMBER"` before its numerical value.
 
-In Experiment 035b:
+In this experiment:
 - The prompt was rewritten to `The answer is [number]` without confusing uppercase placeholder directives.
 - A robust multi-stage regex extractor was locked in advance, handling boxed expressions, GSM8K native hashes, decimal normalizations, and trailing sentence answers.
 - A 50-item pilot gate on GSM8K training questions validated that parse failures dropped below 2%.
-- Confirmatory evaluation was conducted on **500 completely fresh GSM8K test questions** never seen in any prior 035 experiment.
+- Confirmatory evaluation was conducted on **500 completely fresh GSM8K test questions** never used in any of the earlier runs.
 - Result: Parse failure rates dropped to 0.60% (greedy) and 0.45% (stochastic). The true reasoning gain of self-consistency at $k=5$ is **+3.60 pp**, and at $k=8$ is **+4.60 pp**—far smaller than the illusory +15.50 pp reported when voting was merely patching broken output formatting.
 
 ---
 
 ## Timing & Resource Utilization
 - **Timing**: Estimated 60 minutes vs Actual **56 minutes** (Setup: 20 min, Pilot: 3 min, Confirmatory GPU run: 14 min, Eval: 4 min, Writeup: 15 min).
-- **Hardware**: NVIDIA L4 (24 GB VRAM), Google Colab session `b10-035b` (stopped).
+- **Hardware**: NVIDIA L4 (24 GB VRAM), Google Colab session `sc-clean` (stopped).
 - **Compute Units**: **0.96 CU** total consumed (rate: 1.54 CU/hr on L4).
 
 ---

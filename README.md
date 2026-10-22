@@ -1,11 +1,11 @@
-# Experiment 035b: Self-Consistency Done Right (Clean Prompt & Fresh GSM8K)
+# Self-Consistency Done Right (Clean Prompt & Fresh GSM8K)
 
 ## Executive Summary
-Experiment 035b investigates whether self-consistency (majority voting over sampled reasoning paths, Wang et al. 2022) delivers a genuine mathematical reasoning gain over greedy decoding on GSM8K using `Qwen/Qwen3-1.7B`, when prompt artifacts and parse failures are systematically eliminated.
+This experiment investigates whether self-consistency (majority voting over sampled reasoning paths, Wang et al. 2022) delivers a genuine mathematical reasoning gain over greedy decoding on GSM8K using `Qwen/Qwen3-1.7B`, when prompt artifacts and parse failures are systematically eliminated.
 
-In experiment `035r5-self-consistency-1p7b`, the reported primary gain was +15.50 percentage points (greedy 28.50% vs vote@5 44.00%). However, an audit revealed that 55.75% of greedy outputs and 55.80% of stochastic outputs failed to parse because the prompt ended with `Answer: NUMBER`, causing the 1.7B model to copy the literal placeholder token `"NUMBER"` before its numerical value. A post-hoc diagnostic removing the literal `"NUMBER"` string recovered accuracies of 68.50% (greedy) and 77.25% (vote@5), indicating that the true reasoning gain was +8.75 pp, with the remaining +6.75 pp being an artifact of voting recovering from formatting failure.
+In the last of my [earlier self-consistency runs](https://github.com/nankris/self-consistency-voting) (Qwen3-1.7B, vote@5), the reported primary gain was +15.50 percentage points (greedy 28.50% vs vote@5 44.00%). However, an audit revealed that 55.75% of greedy outputs and 55.80% of stochastic outputs failed to parse because the prompt ended with `Answer: NUMBER`, causing the 1.7B model to copy the literal placeholder token `"NUMBER"` before its numerical value. A post-hoc diagnostic removing the literal `"NUMBER"` string recovered accuracies of 68.50% (greedy) and 77.25% (vote@5), indicating that the true reasoning gain was +8.75 pp, with the remaining +6.75 pp being an artifact of voting recovering from formatting failure.
 
-Here, we pre-registered a clean, non-confusing prompt without misleading placeholder words (`Conclude your answer on a new line with: The answer is [number].`), a robust final-answer extractor, a 50-item pilot gate requiring parse failures $\le 2\%$, and a confirmatory evaluation on **500 completely fresh GSM8K test questions** never used in any prior 035 experiment.
+Here, we pre-registered a clean, non-confusing prompt without misleading placeholder words (`Conclude your answer on a new line with: The answer is [number].`), a robust final-answer extractor, a 50-item pilot gate requiring parse failures $\le 2\%$, and a confirmatory evaluation on **500 completely fresh GSM8K test questions** never used in any of the earlier runs.
 
 ---
 
@@ -15,7 +15,7 @@ Here, we pre-registered a clean, non-confusing prompt without misleading placeho
 Does self-consistency majority voting with $k=8$ samples ($T=0.7, p=0.95$) improve mathematical reasoning accuracy over greedy decoding ($T=0$) by at least +5.0 percentage points on fresh GSM8K test questions when prompt formatting artifacts are eliminated?
 
 ### Pre-Registered Hypothesis
-Based on the corrected estimate from `035r5` (+8.75 pp, 95% CI [+5.25, +12.25] pp at $k=5$):
+Based on the corrected estimate from that earlier run (+8.75 pp, 95% CI [+5.25, +12.25] pp at $k=5$):
 - **Hypothesis**: Self-consistency at $k=8$ will outperform greedy decoding by at least **+5.0 percentage points** on fresh GSM8K test questions.
 - **Margin Rationale**: Evaluating 8 stochastic samples increases inference compute by 8x. A gain smaller than +5.0 percentage points is economically unjustifiable for real-world deployment given the latency and compute multiplier.
 - **Secondary Predictions**: 
@@ -46,7 +46,7 @@ Using paired question-level percentile bootstrap with 10,000 resamples:
 
 While self-consistency at $k=8$ delivered a statistically significant paired accuracy improvement of **+4.60 percentage points** (McNemar exact $p = 0.000824$, 95% bootstrap CI [+2.00, +7.20] percentage points), the point estimate (+4.60 pp) fell 0.40 percentage points shy of the pre-registered +5.0 percentage points superiority threshold. Because the 95% confidence interval spans across the +5.0 pp threshold ([+2.00, +7.20] pp), the pre-registered decision rule strictly classifies the result as **INCONCLUSIVE**.
 
-Crucially, the prompt formatting artifact was completely resolved: parse failure rates dropped from **55.75% in 035r5 to 0.60%** (greedy) and from **55.80% to 0.45%** (stochastic samples).
+Crucially, the prompt formatting artifact was completely resolved: parse failure rates dropped from **55.75% in the earlier run to 0.60%** (greedy) and from **55.80% to 0.45%** (stochastic samples).
 
 ### Primary Evaluation Table (n=500 Fresh GSM8K Test Questions)
 
@@ -69,28 +69,28 @@ Crucially, the prompt formatting artifact was completely resolved: parse failure
 ### Model & Hardware
 - **Model**: `Qwen/Qwen3-1.7B` (`bfloat16`, max context length 2048, `enable_thinking=False`).
 - **Engine**: vLLM 0.32.0 on Colab GPU.
-- **Colab GPU**: NVIDIA L4 (24 GB VRAM), session `b10-035b`.
-- **Colab Hard Cap**: 6.0 Compute Units (CU). Actual used: **0.96 CU** (marginal session duration: 21.9 min).
+- **Colab GPU**: NVIDIA L4 (24 GB VRAM), session `sc-clean`.
+- **Colab compute budget**: capped at 6.0 Compute Units (CU). Actual used: **0.96 CU** (marginal session duration: 21.9 min).
 - **Timing**: Estimated: 60 minutes. Actual: **56 minutes** (Setup: 20m, Pilot: 3m, Confirmatory GPU run: 14m, Eval: 4m, Writeup: 15m).
 
 ### Data Split Integrity
 - Total GSM8K test split: 1,319 questions.
-- Total test questions previously used across 035, 035r, 035r3, and 035r5: 815 questions.
+- Total test questions previously used across the earlier runs: 815 questions.
 - Fresh test questions available: 504 questions.
 - **Pilot set**: $n=50$ items from GSM8K train split (indices 0..49), zero test contamination.
 - **Confirmatory set**: $n=500$ fresh GSM8K test items drawn strictly from the 504 untouched test items.
 
 ---
 
-## Decisions Log
-- **Autonomy Decision 1**: Selected 50 items from the GSM8K train split for the pilot phase to reserve all 504 unused test split items exclusively for the $n=500$ confirmatory evaluation.
-- **Autonomy Decision 2**: Used Colab NVIDIA L4 GPU rather than A100 to maximize compute efficiency and stay comfortably under the 6.0 CU hard cap (consumed only 0.96 CU).
-- **Autonomy Decision 3**: Prompt format specified `The answer is [number]` and the robust extractor handles standard patterns (`The answer is X`, `Answer: X`, `#### X`, `\boxed{X}`) with canonical decimal normalization to ensure zero false-positive rejections.
-- **Autonomy Decision 4**: Set the pilot pass criterion to $\le 2.0\%$ (allowing at most 1 token-limit truncation out of 50 items) following empirical confirmation that stochastic samples achieved 0.75% failure rate and zero formatting errors.
+## Design Decisions
+- **Decision 1**: Selected 50 items from the GSM8K train split for the pilot phase to reserve all 504 unused test split items exclusively for the $n=500$ confirmatory evaluation.
+- **Decision 2**: Used Colab NVIDIA L4 GPU rather than A100 to maximize compute efficiency and stay comfortably under the 6.0 CU cap (consumed only 0.96 CU).
+- **Decision 3**: Prompt format specified `The answer is [number]` and the robust extractor handles standard patterns (`The answer is X`, `Answer: X`, `#### X`, `\boxed{X}`) with canonical decimal normalization to ensure zero false-positive rejections.
+- **Decision 4**: Set the pilot pass criterion to $\le 2.0\%$ (allowing at most 1 token-limit truncation out of 50 items) following empirical confirmation that stochastic samples achieved 0.75% failure rate and zero formatting errors.
 
 ---
 
 ## Timing & CU Summary
 - **Timing**: Estimated 60 min vs Actual 56 min.
-- **GPU**: NVIDIA L4 (session `b10-035b`).
+- **GPU**: NVIDIA L4 (session `sc-clean`).
 - **Compute Units**: 0.96 CU consumed (account balance before: 106.71, after: 105.75).

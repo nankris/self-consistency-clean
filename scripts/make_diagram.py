@@ -1,5 +1,6 @@
 """Generate clean figures/diagram.excalidraw and render to PNG."""
 import json
+import os
 import subprocess
 from pathlib import Path
 
@@ -124,7 +125,7 @@ def main():
     elements = []
     
     # Header Titles
-    elements.append(make_line_text("title", 40, 25, "Experiment 035b: Self-Consistency Done Right (Verification Pipeline)", 22, "#1864ab"))
+    elements.append(make_line_text("title", 40, 25, "Self-Consistency Done Right (Verification Pipeline)", 22, "#1864ab"))
     elements.append(make_line_text("subtitle", 40, 58, "Eliminating Prompt Formatting Artifacts and Validating Voting Gains on 500 Fresh GSM8K Items", 16, "#495057"))
 
     boxes = [
@@ -132,7 +133,7 @@ def main():
             "id": "b1",
             "x": 40, "y": 105, "w": 290, "h": 240,
             "bg": "#ffe3e3", "border": "#c92a2a",
-            "header": "1. THE PRIOR FLAW (035r5)",
+            "header": "1. THE PRIOR FLAW (earlier run)",
             "header_color": "#c92a2a",
             "lines": [
                 "• Prompt had 'Answer: NUMBER'",
@@ -221,7 +222,7 @@ def main():
     print(f"Generated {excal_file}")
 
     png_file = FIGURES_DIR / "diagram.png"
-    render_cmd = ["node", "/workspace/tools/excalidraw/render.cjs", str(excal_file), str(png_file), "2"]
+    render_cmd = ["node", os.environ.get("EXCALIDRAW_RENDER", "/workspace/tools/excalidraw/render.cjs"), str(excal_file), str(png_file), "2"]
     res = subprocess.run(render_cmd, capture_output=True, text=True)
     if res.returncode == 0:
         print(f"Rendered {png_file} successfully!")

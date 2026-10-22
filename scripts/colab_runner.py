@@ -10,7 +10,7 @@ import traceback
 from pathlib import Path
 
 os.environ["VLLM_WORKER_MULTIPROC_METHOD"] = "spawn"
-R = Path("/content/b10-035b")
+R = Path("/content/sc-clean")
 R.mkdir(parents=True, exist_ok=True)
 
 SUFFIX = "\n\nSolve briefly step by step. Conclude your answer on a new line with: The answer is [number]."

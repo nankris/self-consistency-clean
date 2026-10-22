@@ -20,9 +20,9 @@ I expected self-consistency to deliver between five and eight percentage points 
 
 ### The Earlier Runs and the Suspicious Leap
 
-This experiment extends a sequence of earlier attempts. In our initial test (Experiment 035), we evaluated Qwen3-0.6B on 40 GSM8K questions locally on CPU. Greedy single-sample decoding scored 50.5%, while a majority vote of five samples reached 57.5% (+7.0 percentage points). But five CPU samples took 79 seconds per question, whereas a single call to a frontier cloud API finished in 9 seconds and scored 100%.
+This experiment extends a sequence of earlier attempts, described in my [self-consistency voting repo](https://github.com/nankris/self-consistency-voting). In the initial test, I evaluated Qwen3-0.6B on 40 GSM8K questions locally on CPU. Greedy single-sample decoding scored 50.5%, while a majority vote of five samples reached 57.5% (+7.0 percentage points). But five CPU samples took 79 seconds per question, whereas a single call to a frontier cloud API finished in 9 seconds and scored 100%.
 
-Attempts to scale up to Qwen3-4B on cloud GPUs (Experiments 035r and 035r3) stalled due to allocation refusals. In Round 5 (`035r5-self-consistency-1p7b`), we evaluated `Qwen/Qwen3-1.7B` on 400 questions using an A100 GPU. The raw numbers looked extraordinary:
+Attempts to scale up to Qwen3-4B on cloud GPUs stalled due to allocation refusals. In the last of those runs, I evaluated `Qwen/Qwen3-1.7B` on 400 questions using an A100 GPU. The raw numbers looked extraordinary:
 
 - Greedy accuracy: 28.50% (114/400 correct)
 - Vote of five accuracy: 44.00% (176/400 correct)
@@ -36,7 +36,7 @@ A jump of 15.5 percentage points suggested sampling unlocked latent reasoning ca
 
 A 1.7B parameter instruction-tuned model scoring only 28.5% on GSM8K did not make sense. Qwen3-1.7B is a capable model that typically clears 65% on grade-school arithmetic.
 
-When I audited the raw generation outputs, the explanation became obvious. The prompt suffix used in round 5 read:
+When I audited the raw generation outputs, the explanation became obvious. The prompt suffix used in that run read:
 
 ```
 Solve briefly. End with exactly: Answer: NUMBER
@@ -60,19 +60,19 @@ Over 40% of the originally reported +15.50 point gain was an artifact created by
 
 ### The Clean Protocol and Fresh Rerun
 
-To establish the genuine effect of self-consistency, I pre-registered a cleanup protocol in Experiment 035b before launching GPU work:
+To establish the genuine effect of self-consistency, I pre-registered a cleanup protocol in this experiment before launching GPU work:
 
 1. **Clean prompt**: We replaced the ambiguous directive with clear instructions without placeholder words: `Solve briefly step by step. Conclude your answer on a new line with: The answer is [number].`
 2. **Robust extractor**: A standardized parser that scans backwards for common concluding phrases (`The answer is X`, `Answer: X`), handles LaTeX `\boxed{X}` markup, strips GSM8K delimiters (`#### X`), and canonicalizes commas and decimals.
 3. **Pilot gate**: A pre-registered gate on 50 training questions requiring parse failure rates below 2.0% before proceeding to test evaluation.
-4. **Fresh test data**: Exactly **500 fresh GSM8K test questions** drawn strictly from test items untouched by any previous 035 experiment.
+4. **Fresh test data**: Exactly **500 fresh GSM8K test questions** drawn strictly from test items untouched by any earlier run.
 5. **Pre-registered decision rule**: A margin of +5.0 percentage points. Given that $k=8$ samples consumes eight times the compute, self-consistency had to beat greedy decoding by at least +5.0 percentage points with a 95% bootstrap lower bound above +2.0 pp to earn a verdict of PROVEN.
 
 The verification pipeline is shown in figures/diagram.png.
 
-![Experiment 035b Pipeline](figures/diagram.png)
+![Verification pipeline](figures/diagram.png)
 
-*Figure 1: The experimental verification pipeline (figures/diagram.png), showing the transition from the flawed 035r5 prompt to the clean pilot gate, fresh confirmatory split, and decision rule.*
+*Figure 1: The experimental verification pipeline (figures/diagram.png), showing the transition from the flawed earlier prompt to the clean pilot gate, fresh confirmatory split, and decision rule.*
 
 We ran the pilot on 50 training items on an NVIDIA L4 GPU via vLLM. It passed cleanly: greedy parse failures dropped to 2.0% (a single token-limit truncation, not a formatting failure), and stochastic sample failures dropped to 0.75% (3 out of 400 samples). We then unlocked the confirmatory evaluation.
 
@@ -112,7 +112,7 @@ Formatting artifacts vanished completely, as shown in figures/parse_failure_rate
 
 ![Parse Failure Rate Comparison](figures/parse_failure_rate.png)
 
-*Figure 5: Parse failure rate comparison (figures/parse_failure_rate.png), contrasting the 55.8% catastrophic failure rate of the flawed 035r5 prompt against the 0.6% and 0.45% rates under the clean 035b extractor.*
+*Figure 5: Parse failure rate comparison (figures/parse_failure_rate.png), contrasting the 55.8% catastrophic failure rate of the flawed earlier prompt against the 0.6% and 0.45% rates under the clean extractor.*
 
 Parse failures dropped from 55.75% to 0.60% for greedy decoding, and from 55.80% to 0.45% across all 4,000 stochastic generations.
 
@@ -124,7 +124,7 @@ My pre-registered hypothesis predicted that $k=8$ would beat greedy decoding by 
 
 Under our strict decision rule, because the point estimate is below +5.0 pp while the upper confidence interval bound reaches +7.20 pp, the verdict is officially **INCONCLUSIVE**. Pre-registered rules do not get rewritten after seeing the data.
 
-What surprised me most was the baseline greedy accuracy of Qwen3-1.7B. When given an unconfusing prompt, the model solved 74.40% of the fresh GSM8K test set directly on its first try. In the flawed 035r5 experiment, greedy accuracy was recorded as 28.50%. Merely removing the word `NUMBER` from the prompt lifted single-shot performance by 45.9 percentage points without sampling a single extra token.
+What surprised me most was the baseline greedy accuracy of Qwen3-1.7B. When given an unconfusing prompt, the model solved 74.40% of the fresh GSM8K test set directly on its first try. In the earlier run, greedy accuracy was recorded as 28.50%. Merely removing the word `NUMBER` from the prompt lifted single-shot performance by 45.9 percentage points without sampling a single extra token.
 
 ---
 
@@ -149,7 +149,7 @@ This evaluation was conducted on GSM8K with `Qwen/Qwen3-1.7B`. GSM8K focuses on 
 
 Self-consistency works. It reliably adds +4.60 percentage points to a 1.7B model on unseen math problems. But it is not magic, and it was never worth +15.5 points. Half of that earlier gain was an illusion born of a bad prompt and a strict parser. Clean evaluation matters as much as the sampling algorithm itself.
 
-Code: [tig/035b-self-consistency-clean](https://github.com/example/tig/035b-self-consistency-clean)
+Code: [self-consistency-clean](https://github.com/nankris/self-consistency-clean)
 
 ## Screenshots
 ![1_runner_log_head](figures/screenshots/1_runner_log_head.png)

@@ -1,7 +1,7 @@
 import subprocess, os, sys
 from pathlib import Path
 
-R = Path('/content/b10-035b')
+R = Path('/content/sc-clean')
 pid_file = R / 'runner.pid'
 alive = False
 if pid_file.exists():

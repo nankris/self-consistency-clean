@@ -1,7 +1,7 @@
 === COLAB SESSION INFO ===
 Mon Oct 19 21:33:33 UTC 2026
-[b10-035b] gpu-l4-s-kkb-ass1a1-3dwmhjxm9etab | Hardware: L4 | Shape: Standard | Variant: GPU
-[b10-102d] gpu-l4-s-kkb-ass1b0-3caxo31arlxrv | Hardware: L4 | Shape: Standard | Variant: GPU
+[sc-clean] gpu-l4-s-kkb-ass1a1-3dwmhjxm9etab | Hardware: L4 | Shape: Standard | Variant: GPU
+[other-session] gpu-l4-s-kkb-ass1b0-3caxo31arlxrv | Hardware: L4 | Shape: Standard | Variant: GPU
 Current balance: 106.52 compute units
 Usage rate: 3.08/hr
 Active assignments: 2
@@ -32,7 +32,7 @@ Mon Oct 19 21:48:44 UTC 2026
 Current balance: 105.75 compute units
 Usage rate: 3.08/hr
 Active assignments: 2
-[colab] Stopping session 'b10-035b'...
+[colab] Stopping session 'sc-clean'...
 [colab] Session terminated.
 === POST-STOP USAGE ===
 Current balance: 105.75 compute units

@@ -1,4 +1,4 @@
-"""Confirmatory analysis for Experiment 035b.
+"""Confirmatory analysis for the clean self-consistency experiment.
 
 Evaluates GSM8K greedy decoding vs Self-Consistency majority voting
 at k in {1, 3, 5, 8} samples on 500 fresh test questions.
